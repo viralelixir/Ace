@@ -21,6 +21,8 @@ defmodule Ace.Mixfile do
 
   defp deps do
     [
+      {:excheck, "~> 0.5", only: :test},
+      {:triq, github: "triqng/triq", only: :test},
       {:dialyxir, "~> 0.3.5", only: :dev},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]

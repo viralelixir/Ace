@@ -20,7 +20,7 @@ defmodule Ace.TCP do
     {:mode, :binary},
 
     # Received packets are delineated on each new line.
-    {:packet, :line},
+    {:packet, :raw},
 
     # Set the socket to execute in passive mode.
     # The process must explicity recieve incoming data by calling `TCP.recv/2`

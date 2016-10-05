@@ -1,5 +1,6 @@
 defmodule Ace.TCPTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
+  use ExCheck
 
   test "echos each message" do
     port = 10001
@@ -15,5 +16,23 @@ defmodule Ace.TCPTest do
     {:ok, client} = :gen_tcp.connect({127, 0, 0, 1}, port, [{:active, false}, :binary])
     :ok = :gen_tcp.send(client, "blob\r\n")
     {:ok, "ECHO: blob\r\n"} = :gen_tcp.recv(client, 0)
+  end
+
+  property "echo exact message" do
+    for_all x in binary do
+      port = 10002
+      task = Task.async(fn () ->
+        Ace.TCP.start(port)
+      end)
+      :timer.sleep(100)
+
+      {:ok, client} = :gen_tcp.connect({127, 0, 0, 1}, port, [{:active, false}, :binary])
+      sent = "#{x}\r\n"
+      :ok = :gen_tcp.send(client, sent)
+      {:ok, "ECHO: "<> ^sent} = :gen_tcp.recv(client, 0)
+      :gen_tcp.close(client)
+      :timer.sleep(10)
+      true
+     end
   end
 end
