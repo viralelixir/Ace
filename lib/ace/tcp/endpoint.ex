@@ -36,6 +36,7 @@ defmodule Ace.TCP.Endpoint do
   end
 
   def init({app, opts}) do
+    :erlang.process_flag(:trap_exit, true)
     port = Keyword.get(opts, :port, 8080)
     # Setup a socket to listen with our TCP options
     {:ok, listen_socket} = TCP.listen(port, @tcp_options)
@@ -50,13 +51,11 @@ defmodule Ace.TCP.Endpoint do
     {:ok, {listen_socket, server_supervisor, governor_supervisor}}
   end
 
-  def handle_info(m, s) do
-    IO.inspect(m)
-    {:noreply, s}
+  def handle_info({:EXIT, socket, reason}, state = {socket, servers, governors}) do
+    {:stop, reason, state}
   end
-
-  def terminate(r, s) do
-    IO.inspect(r)
-    {:ok, r}
+  def handle_info({:EXIT, _pid, reason}, state = {socket, servers, governors}) do
+    :gen_tcp.close(socket)
+    {:stop, reason, state}
   end
 end

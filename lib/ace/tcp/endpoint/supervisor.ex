@@ -9,7 +9,7 @@ defmodule Ace.TCP.Endpoint.Supervisor do
 
   def init(app) do
     children = [
-      worker(Ace.TCP.Endpoint, [], restart: :temporary)
+      worker(Ace.TCP.Endpoint, [], restart: :permanent)
     ]
 
     supervise(children, strategy: :simple_one_for_one)
